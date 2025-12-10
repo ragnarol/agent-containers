@@ -52,6 +52,14 @@ openai-codex: base
 		-t openai-codex \
 		-f openai-codex/Dockerfile openai-codex
 
+open-code: base
+	@echo "Building open-code"
+	$(CONTAINER_ENGINE) build \
+		$(CACHE_FLAG) \
+		$(CACHE_FROM_FLAG) \
+		-t open-code \
+		-f open-code/Dockerfile claude-code
+
 clean:
 	@echo "Removing container images"
 	@if $(CONTAINER_ENGINE) image inspect claude-code > /dev/null 2>&1; then \
