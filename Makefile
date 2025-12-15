@@ -10,13 +10,6 @@ HOST_GID := $(shell id -g)
 # Tools to install in to the containers with apt-get
 LOCAL_TOOLS := "git curl jq ripgrep vim nano make zip unzip ssh-client wget tree imagemagick build-essential python3 python3-pip"
 
-# Build options for caching control (set to 1 to disable cache)
-DISABLE_CACHE ?= 0
-CACHE_FROM ?=
-
-# Cache control flag based on DISABLE_CACHE
-CACHE_FLAG := $(if $(filter 1,$(DISABLE_CACHE)),--no-cache,)
-CACHE_FROM_FLAG := $(if $(CACHE_FROM),--cache-from $(CACHE_FROM),)
 
 # Ensure we have a container engine
 ifeq ($(CONTAINER_ENGINE),)
@@ -31,32 +24,27 @@ base:
 		--build-arg HOST_UID=$(HOST_UID) \
 		--build-arg HOST_GID=$(HOST_GID) \
 		--build-arg LOCAL_TOOLS=$(LOCAL_TOOLS) \
-		$(CACHE_FLAG) \
-		$(CACHE_FROM_FLAG) \
 		-t agent-base \
 		-f base/Dockerfile base
 
 claude-code: base
 	@echo "Building claude-code"
 	$(CONTAINER_ENGINE) build \
-		$(CACHE_FLAG) \
-		$(CACHE_FROM_FLAG) \
+		--no-cache
 		-t claude-code \
 		-f claude-code/Dockerfile claude-code
 
 openai-codex: base
 	@echo "Building openai-codex"
 	$(CONTAINER_ENGINE) build \
-		$(CACHE_FLAG) \
-		$(CACHE_FROM_FLAG) \
+		--no-cache
 		-t openai-codex \
 		-f openai-codex/Dockerfile openai-codex
 
 open-code: base
 	@echo "Building open-code"
 	$(CONTAINER_ENGINE) build \
-		$(CACHE_FLAG) \
-		$(CACHE_FROM_FLAG) \
+		--no-cache
 		-t open-code \
 		-f open-code/Dockerfile open-code
 
