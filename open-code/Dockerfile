@@ -9,6 +9,7 @@ RUN npm install -g opencode-ai && \
 # Runtime stage
 FROM agent-base
 
+
 # Copy the installed global modules from builder
 # We must use --chown to ensure the node user owns the copied files
 COPY --from=builder --chown=node:node /home/node/.npm-global /home/node/.npm-global
@@ -21,5 +22,16 @@ RUN echo "" && \
   echo "\e[34m" && opencode --version && \
   echo "\e[0m" && \
   echo ""
+
+
+USER root
+RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN rm packages-microsoft-prod.deb
+RUN apt-get update && \
+  apt-get install -y dotnet-sdk-10.0
+USER node
+
+RUN npx get-shit-done-cc --opencode --global # Install to ~/.config/opencode/
 
 CMD ["opencode"]
